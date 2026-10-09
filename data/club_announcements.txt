@@ -1,0 +1,15 @@
+08/10/2026, 18:02 - Person A: Hey everyone, welcome to the Coding Club group
+08/10/2026, 18:05 - Person B: hi
+08/10/2026, 18:40 - Person C: CodeStorm Hackathon 2026 is here! 24-hour hackathon open to 2nd and 3rd year students of CSE, ISE and AIML. Domains: Web Development, IoT, Healthcare AI. Teams of 3 to 4. Register at forms.example.com/codestorm by 14th October 2026. Event dates: 24th and 25th October, Main Auditorium.
+08/10/2026, 18:41 - Person D: lets team up?
+08/10/2026, 18:42 - Person E: count me in
+08/10/2026, 19:15 - Person F: lol who is making the team names
+09/10/2026, 09:05 - Person C: Reminder: CodeStorm registration closes 14th October. Only teams with at least one 2nd year member are eligible.
+09/10/2026, 09:30 - Person G: Inauguration of the AI & Robotics Club will be held on 12th October 2026 at 3:00 PM in Seminar Hall 2. Chief guest: Dr. Person Z. All students are welcome.
+09/10/2026, 09:31 - Person H: nice
+09/10/2026, 10:12 - Person I: Workshop on Git and GitHub tomorrow at 4 PM, Lab 3. Only 1st year students. Bring your laptop. Free, register at forms.example.com/git
+09/10/2026, 10:13 - Person J: ok thanks
+09/10/2026, 11:00 - Person A: Anyone seen my charger
+09/10/2026, 11:20 - Person K: Internship opportunity at a local startup: Frontend Developer Intern, 3rd and 4th year only, stipend provided. Send your resume to hr@example.com before 20th October. Apply as a single PDF named USN_Name.pdf
+09/10/2026, 12:00 - Person L: Cultural fest Rhythm 2026 volunteer sign-ups are open. Fill the form at forms.example.com/rhythm by Sunday.
+09/10/2026, 12:01 - Person B: ok

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Did I Miss?</title>
+<style>
+  *{box-sizing:border-box} body{font-family:system-ui,sans-serif;margin:0;background:#f4f5f7;color:#1c1e21}
+  header{background:#1f2937;color:#fff;padding:18px 24px} h1{margin:0;font-size:22px}
+  header p{margin:4px 0 0;font-size:13px;opacity:.75}
+  #banner{margin:16px 24px 0;padding:12px 16px;border-radius:8px;background:#fef3c7;color:#92400e;font-weight:600}
+  #banner.ok{background:#dcfce7;color:#166534}
+  #tabs{display:flex;gap:8px;padding:16px 24px;flex-wrap:wrap}
+  .tab{border:0;padding:8px 14px;border-radius:20px;background:#e5e7eb;cursor:pointer;font-size:14px}
+  .tab.active{background:#2563eb;color:#fff}
+  #list{padding:0 24px 40px;display:grid;gap:12px;max-width:820px}
+  .card{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px #0002}
+  .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .title{font-weight:600;font-size:16px}
+  .badge{font-size:12px;padding:3px 9px;border-radius:12px;white-space:nowrap;background:#e5e7eb}
+  .badge.urgent{background:#fee2e2;color:#b91c1c;font-weight:600}
+  .badge.soon{background:#ffedd5;color:#c2410c}
+  .badge.past{background:#e5e7eb;color:#6b7280}
+  .cat{font-size:11px;text-transform:uppercase;color:#6b7280;margin-bottom:4px}
+  .row{font-size:14px;margin-top:5px} .row b{color:#374151}
+  .orig{margin-top:10px;font-size:13px;color:#2563eb;cursor:pointer;background:none;border:0;padding:0}
+  .msgs{display:none;margin-top:8px;padding:10px;background:#f9fafb;border-left:3px solid #2563eb;font-size:13px;white-space:pre-wrap}
+  .msgs.show{display:block} .empty{padding:20px;color:#6b7280}
+  a{color:#2563eb}
+</style></head><body>
+<header><h1>What Did I Miss?</h1><p>Runs fully on your laptop. No message ever leaves this device.</p></header>
+<div id="banner"></div><div id="tabs"></div><div id="list"></div>
+<script>
+const TABS = {
+  all:{label:"All", cats:null},
+  tech:{label:"Tech & Academic", cats:["tech_event","academic_task"]},
+  assess:{label:"Assessments", cats:["assessment"]},
+  events:{label:"Events & Clubs", cats:["non_tech_event","club_inauguration"]},
+  notices:{label:"Notices", cats:["admin","other"]}
+};
+let items=[], current="all";
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const when=it=>it.deadline||it.event_time;
+const hoursLeft=it=>when(it)?(new Date(when(it))-new Date())/36e5:null;
+const fmt=d=>{const x=new Date(d);const t=(x.getHours()||x.getMinutes())?{hour:"2-digit",minute:"2-digit"}:{};return x.toLocaleString([],{day:"numeric",month:"short",...t})};
+
+function badge(it){
+  const h=hoursLeft(it);
+  if(h===null) return '<span class="badge">No date</span>';
+  if(h<0) return `<span class="badge past">Passed · ${fmt(when(it))}</span>`;
+  if(h<48) return `<span class="badge urgent">Due soon · ${fmt(when(it))}</span>`;
+  return `<span class="badge">${fmt(when(it))}</span>`;
+}
+function row(label,val){return val?`<div class="row"><b>${label}:</b> ${esc(val)}</div>`:""}
+
+function render(){
+  const t=TABS[current];
+  const list=items.filter(i=>!t.cats||t.cats.includes(i.category));
+  document.getElementById("list").innerHTML = list.length ? list.map((it,n)=>`
+    <div class="card">
+      <div class="cat">${esc(it.category.replace("_"," "))}</div>
+      <div class="top"><div class="title">${esc(it.title)}</div>${badge(it)}</div>
+      ${it.deadline&&it.event_time?row("Event",fmt(it.event_time)):""}
+      ${row("Venue",it.venue)}${row("Eligibility",it.eligibility)}
+      ${row("How to apply",it.how_to_apply)}${row("Submit as",it.submission_format)}
+      ${it.link?`<div class="row"><b>Link:</b> <a href="${esc(it.link)}" target="_blank">${esc(it.link)}</a></div>`:""}
+      ${it.seen_count>1?row("Seen in",it.seen_count+" messages"):""}
+      <button class="orig" onclick="document.getElementById('m${it.id}').classList.toggle('show')">Show original message</button>
+      <div class="msgs" id="m${it.id}">${it.messages.map(m=>esc(m.sender)+" · "+esc(m.timestamp.slice(0,16).replace("T"," "))+"\n"+esc(m.text)).join("\n\n— — —\n\n")}</div>
+    </div>`).join("") : '<div class="empty">Nothing here.</div>';
+}
+function init(){
+  document.getElementById("tabs").innerHTML=Object.entries(TABS).map(([k,v])=>
+    `<button class="tab ${k===current?"active":""}" onclick="current='${k}';init()">${v.label}</button>`).join("");
+  render();
+}
+fetch("/api/items").then(r=>r.json()).then(d=>{
+  items=d;
+  const soon=items.filter(i=>{const h=hoursLeft(i);return h!==null&&h>=0&&h<72}).length;
+  const b=document.getElementById("banner");
+  b.textContent=soon?`${soon} item${soon>1?"s":""} due in the next 3 days`:"Nothing due in the next 3 days";
+  if(!soon) b.className="ok";
+  init();
+});
+</script></body></html>
